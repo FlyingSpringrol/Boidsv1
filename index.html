@@ -1,0 +1,51 @@
+<html>
+   <head>
+      <title>Boids</title>
+   </head>
+   <script src = './boids.js'></script>
+   <style>
+      canvas{
+         border: 1px dotted black;
+      }
+   </style>
+   <body>
+      <script>
+         //canvas code
+         var canvas = document.createElement('canvas');
+         canvas.id = 'canvas1';
+         canvas.height = 1000;
+         canvas.width = 1000;
+         document.body.appendChild(canvas);
+         var context = canvas.getContext('2d');
+         var max = new Vector3(canvas.height, canvas.width, 50);
+
+         var boid1 = new Boid(context, new Vector3(10, 10, 10), new Vector3(0, 0, 0), max, 2.9);
+         var boid2 = new Boid(context, new Vector3(20, 40, 20), new Vector3(0, 0, 0), max, 3);
+         var boid3 = new Boid(context, new Vector3(40, 50, 20), new Vector3(0, 0, 0), max, 3.1);
+         var boid4 = new Boid(context, new Vector3(10, 100, 20), new Vector3(0, 0, 0), max, 3.1);
+         var boid5 = new Boid(context, new Vector3(10, 400, 20), new Vector3(0, 0, 0), max, 3.1);
+
+
+         var boids = [];
+         boids.push(boid1);
+         boids.push(boid2);
+         boids.push(boid3);
+         boids.push(boid4);
+         boids.push(boid5);
+         function addEventListeners(){ //loads image and initializes population
+               document.addEventListener('mousemove', function(evt){
+                  boids_chase_mouse(boids, evt.clientX, evt.clientY);
+               });
+
+         }
+         addEventListeners();
+         function gameLoop(){
+            context.clearRect(0, 0, canvas.width, canvas.height); //clear for drawing
+            update_boid_positions(boids);
+            draw_boids(boids)
+            window.requestAnimationFrame(gameLoop);
+         }
+         window.requestAnimationFrame(gameLoop);
+      </script>
+   </body>
+</html>
