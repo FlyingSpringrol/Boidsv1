@@ -24,7 +24,11 @@
          var boid3 = new Boid(context, new Vector3(40, 50, 20), new Vector3(0, 0, 0), max, 3.1);
          var boid4 = new Boid(context, new Vector3(10, 100, 20), new Vector3(0, 0, 0), max, 3.1);
          var boid5 = new Boid(context, new Vector3(10, 400, 20), new Vector3(0, 0, 0), max, 3.1);
-
+         var boid6 = new Boid(context, new Vector3(10, 10, 10), new Vector3(0, 0, 0), max, 2.9);
+         var boid7 = new Boid(context, new Vector3(20, 40, 20), new Vector3(0, 0, 0), max, 3.1);
+         var boid8 = new Boid(context, new Vector3(40, 50, 20), new Vector3(0, 0, 0), max, 3.3);
+         var boid9 = new Boid(context, new Vector3(10, 100, 20), new Vector3(0, 0, 0), max, 3.2);
+         var boid10 = new Boid(context, new Vector3(10, 400, 20), new Vector3(0, 0, 0), max, 3.8);
 
          var boids = [];
          boids.push(boid1);
@@ -32,17 +36,75 @@
          boids.push(boid3);
          boids.push(boid4);
          boids.push(boid5);
-         function addEventListeners(){ //loads image and initializes population
-               document.addEventListener('mousemove', function(evt){
-                  boids_chase_mouse(boids, evt.clientX, evt.clientY);
-               });
+         boids.push(boid6);
+         boids.push(boid7);
+         boids.push(boid8);
+         boids.push(boid9);
 
+         var agent1 = new Agent(context, new Vector3(10, 10, 10));
+
+         var agents = [];
+         agents.push(agent1);
+
+         var moveFactor = 5;
+         var tickRate = 12;
+         var keys = {};
+         function move(){
+            if (keys["a"]){
+               if (agent1.pos.x > 0)
+                  agent1.pos.x -= moveFactor;
+            }
+            else if (keys["s"]){
+               if (agent1.pos.x < canvas.height)
+                  agent1.pos.y += moveFactor;
+            }
+            else if (keys["d"]){
+               if (agent1.pos.x < canvas.width)
+                  agent1.pos.x += moveFactor;
+            }
+            else if (keys["w"]){
+               if (agent1.pos.y > 0)
+                  agent1.pos.y  -= moveFactor;
+            }
+         }
+         window.setInterval(move, tickRate);
+         function addEventListeners(){ //loads image and initializes population
+               window.addEventListener("keydown", function(evt){
+                  if (evt.keyCode == 65){ //a
+                     keys["a"] = true;
+                  }
+                  else if (evt.keyCode == 83){
+                     keys["s"] = true;
+                  } //s
+                  else if (evt.keyCode == 68){
+                     keys["d"] = true;
+                  }// d
+                  else if (evt.keyCode == 87){
+                     keys["w"] = true;
+                  } //w
+               }, true);
+
+               window.addEventListener("keyup", function(evt){
+                  if (evt.keyCode == 65){ //a
+                     keys["a"] = false;
+                  }
+                  else if (evt.keyCode == 83){
+                     keys["s"] = false;
+                  } //s
+                  else if (evt.keyCode == 68){
+                     keys["d"] = false;
+                  }// d
+                  else if (evt.keyCode == 87){
+                     keys["w"] = false;
+                  } //w
+               }, true);
          }
          addEventListeners();
          function gameLoop(){
             context.clearRect(0, 0, canvas.width, canvas.height); //clear for drawing
-            update_boid_positions(boids);
-            draw_boids(boids)
+            update_boid_positions(boids, agents);
+            draw_boids(boids);
+            draw_agents(agents);
             window.requestAnimationFrame(gameLoop);
          }
          window.requestAnimationFrame(gameLoop);

@@ -1,3 +1,4 @@
+
 function Vector3(x, y, z){
    this.x = x;
    this.y = y;
@@ -40,19 +41,29 @@ var draw_boids = function(boids){
       }
    }
 }
-var update_boid_positions = function(boids){
+var update_boid_positions = function(boids, agents){
    for (var i = 0; i < boids.length; i++){
       if (boids[i]){
-         boids[i].update_pos(boids); //update pos based on other boids positions
+         boids[i].update_pos(boids, agents); //update pos based on other boids positions
       }
    }
 }
-var boids_chase_mouse = function(boids, x, y){
-   for (var i = 0; i < boids.length; i++){
-      if (boids[i]){
-         boids[i].seek_mouse(x, y); //update pos based on other boids positions
+var draw_agents = function(agents){
+   for (var i = 0; i< agents.length; i++){
+      if (agents[i]){
+         agents[i].draw();
       }
    }
+}
+function Agent(context, init_pos){ //boids avoid these
+   this.pos = init_pos; //vector
+   this.context = context;
+}
+Agent.prototype.draw = function(){
+   //TODO, make into a webGL function
+   this.context.fillRect(this.pos.x, this.pos.y, 40, 40);
+   this.context.closePath();
+
 }
 function Boid(context, init_pos, init_velocity, max, vLim){ //context, vector object, vector object
    this.pos = init_pos;
@@ -66,15 +77,34 @@ Boid.prototype.check_outside = function(){
    if (this.pos.x < 0){
       this.velocity.x = returnSpeed;
    }
-   else if (this.pos.x > this.maxX){
+   else if (this.pos.x > this.max.x){
       this.velocity.x = -returnSpeed;
    }
    else if (this.pos.y < 0){
       this.velocity.y = returnSpeed;
    }
-   else if (this.pos.y > this.maxY){
+   else if (this.pos.y > this.max.y){
       this.velocity.y = -returnSpeed;
    }
+   else if (this.pos.z < 0){
+      this.velocity.z = returnSpeed;
+   }
+   else if (this.pos.z > this.max.z){
+      this.velocity.z = -returnSpeed;
+   }
+}
+Boid.prototype.avoid_agents = function(agents){
+   var min_dist = 100;
+   var repulsionFactor = 10;
+   var repulsion = new Vector3(0, 0, 0);
+   for (var i = 0; i < agents.length; i++){
+      if (boids[i] == this) continue; //if itself, ignore
+      else if (distance_vecs(this.pos, agents[i].pos) < min_dist){
+         var diff = sub_vecs(this.pos, agents[i].pos); //move away the exact distance
+         repulsion = add_vecs(repulsion, diff);
+      }
+   }
+   return multiply_vec_scalar(repulsion, repulsionFactor);
 }
 Boid.prototype.check_velocity = function(){
    var m = magnitude(this.velocity); //magnitude
@@ -82,21 +112,17 @@ Boid.prototype.check_velocity = function(){
       this.velocity = multiply_vec_scalar(divide_vec_scalar(this.velocity, m), this.vLim);
    }
 }
-Boid.prototype.update_pos = function(boids){
+Boid.prototype.update_pos = function(boids, agents){
    var v1 = this.seek_centroid(boids);
    var v2 = this.avoid_nearest(boids);
    var v3 = this.match_velocity(boids);
-   this.velocity = add_vecs(this.velocity, add_vecs(add_vecs(v1, v3), v2));
+   var v4 = this.avoid_agents(agents); //agent position is global
+   this.velocity = add_vecs(this.velocity, add_vecs(add_vecs(add_vecs(v1, v3), v2),v4));
    this.check_outside();
    this.check_velocity();
    this.pos = add_vecs(this.pos, this.velocity);
 }
-Boid.prototype.seek_mouse = function(x, y){
-   //currently unused
-   var move_factor = 100;
-   this.velocity.x = (this.velocity.x + (x - this.pos.x));
-   this.velocity.y = (this.velocity.y + (y - this.pos.y));
-}
+
 Boid.prototype.seek_centroid = function(boids){ //return new velocity
    var centroid = new Vector3(0, 0, 0);
    var move_factor = 1000;
@@ -104,13 +130,13 @@ Boid.prototype.seek_centroid = function(boids){ //return new velocity
       if (boids[i] == this) continue; //if itself, ignore
       else centroid = add_vecs(centroid, boids[i].pos);
    }
-   //avoid dividing by zero
-
    centroid = divide_vec_scalar(centroid, boids.length-1);
    centroid = divide_vec_scalar(sub_vecs(centroid, this.pos), move_factor);
    return centroid;
 }
 Boid.prototype.avoid_nearest = function(boids){
+
+   //TODO: add optimization that only makes boid move away from the closest boid
    var min_dist = 20;
    var repulsion = new Vector3(0, 0, 0);
    for (var i = 0; i < boids.length; i++){
@@ -135,8 +161,11 @@ Boid.prototype.match_velocity = function(boids){
 }
 Boid.prototype.draw = function(){
    //TODO, make into a webGL function
-   this.context.beginPath();
-   this.context.fillRect(this.pos.x, this.pos.y, 10, 10);
+   var xSize = this.max.z-this.pos.z;
+   var ySize = this.max.z-this.pos.z;
+   var xOffset = xSize/2;
+   var yOffset = ySize/2;
+   this.context.fillRect(this.pos.x - xOffset, this.pos.y-yOffset, xSize, ySize);
    this.context.closePath();
 
 }
