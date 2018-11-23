@@ -20,16 +20,16 @@
          var max = new Vector3(canvas.height, canvas.width, 50);
          var boidSpeed = 3.0;
          var boidSize = new Vector3(10, 10, 0);
-         var boid1 = new Boid(context, new Vector3(10, 10, 10), new Vector3(0, 0, 0), max, boidSpeed + Math.random(), boidSize);
-         var boid2 = new Boid(context, new Vector3(20, 40, 20), new Vector3(0, 0, 0), max, boidSpeed + Math.random(), boidSize);
-         var boid3 = new Boid(context, new Vector3(40, 50, 20), new Vector3(0, 0, 0), max, boidSpeed + Math.random(), boidSize);
-         var boid4 = new Boid(context, new Vector3(10, 100, 20), new Vector3(0, 0, 0), max, boidSpeed + Math.random(), boidSize);
-         var boid5 = new Boid(context, new Vector3(10, 400, 20), new Vector3(0, 0, 0), max, boidSpeed + Math.random(), boidSize);
-         var boid6 = new Boid(context, new Vector3(10, 10, 10), new Vector3(0, 0, 0), max, boidSpeed + Math.random(), boidSize);
-         var boid7 = new Boid(context, new Vector3(20, 40, 20), new Vector3(0, 0, 0), max, boidSpeed + Math.random(), boidSize);
-         var boid8 = new Boid(context, new Vector3(40, 50, 20), new Vector3(0, 0, 0), max, boidSpeed + Math.random(), boidSize);
-         var boid9 = new Boid(context, new Vector3(10, 100, 20), new Vector3(0, 0, 0), max, boidSpeed + Math.random(), boidSize);
-         var boid10 = new Boid(context, new Vector3(10, 400, 20), new Vector3(0, 0, 0), max, boidSpeed + Math.random(), boidSize);
+         var boid1 = new Boid(context, new Vector3(10, 10, 10), new Vector3(0, 0, 0), max, boidSpeed, boidSize);
+         var boid2 = new Boid(context, new Vector3(20, 40, 20), new Vector3(0, 0, 0), max, boidSpeed, boidSize);
+         var boid3 = new Boid(context, new Vector3(40, 50, 20), new Vector3(0, 0, 0), max, boidSpeed, boidSize);
+         var boid4 = new Boid(context, new Vector3(10, 100, 20), new Vector3(0, 0, 0), max, boidSpeed, boidSize);
+         var boid5 = new Boid(context, new Vector3(10, 400, 20), new Vector3(0, 0, 0), max, boidSpeed, boidSize);
+         var boid6 = new Boid(context, new Vector3(10, 10, 10), new Vector3(0, 0, 0), max, boidSpeed, boidSize);
+         var boid7 = new Boid(context, new Vector3(20, 40, 20), new Vector3(0, 0, 0), max, boidSpeed, boidSize);
+         var boid8 = new Boid(context, new Vector3(40, 50, 20), new Vector3(0, 0, 0), max, boidSpeed,boidSize);
+         var boid9 = new Boid(context, new Vector3(10, 100, 20), new Vector3(0, 0, 0), max, boidSpeed,boidSize);
+         var boid10 = new Boid(context, new Vector3(10, 400, 20), new Vector3(0, 0, 0), max, boidSpeed,boidSize);
 
          var boids = [];
          boids.push(boid1);
@@ -42,114 +42,10 @@
          boids.push(boid8);
          boids.push(boid9);
 
-         var agentSize = new Vector3(25, 25, 0);
-         var agent1 = new Agent(context, new Vector3(200, 200, 10), agentSize);
-         var agent2 = new Agent(context, new Vector3(200, 200, 15), agentSize);
-         var agents = [];
-         agents.push(agent1);
-         agents.push(agent2);
-
-         var moveFactor = 5;
-         var tickRate = 12;
-         var keys = {};
-         function move(){
-            if (keys["a"]){
-               if (agent1.pos.x > 0)
-                  agent1.pos.x -= moveFactor;
-            }
-            else if (keys["s"]){
-               if (agent1.pos.x < canvas.height)
-                  agent1.pos.y += moveFactor;
-            }
-            else if (keys["d"]){
-               if (agent1.pos.x < canvas.width)
-                  agent1.pos.x += moveFactor;
-            }
-            else if (keys["w"]){
-               if (agent1.pos.y > 0)
-                  agent1.pos.y  -= moveFactor;
-            }
-            if (keys["l_arrow"]){
-               if (agent2.pos.x > 0)
-                  agent2.pos.x -= moveFactor;
-            }
-            else if (keys["d_arrow"]){
-               if (agent2.pos.x < canvas.height)
-                  agent2.pos.y += moveFactor;
-            }
-            else if (keys["r_arrow"]){
-               if (agent2.pos.x < canvas.width)
-                  agent2.pos.x += moveFactor;
-            }
-            else if (keys["u_arrow"]){
-               if (agent2.pos.y > 0)
-                  agent2.pos.y  -= moveFactor;
-            }
-         }
-         window.setInterval(move, tickRate);
-         function addEventListeners(){ //loads image and initializes population
-               window.addEventListener("keydown", function(evt){
-                  if (evt.keyCode == 65){ //a
-                     keys["a"] = true;
-                  }
-                  else if (evt.keyCode == 83){
-                     keys["s"] = true;
-                  } //s
-                  else if (evt.keyCode == 68){
-                     keys["d"] = true;
-                  }// d
-                  else if (evt.keyCode == 87){
-                     keys["w"] = true;
-                  } //w
-                  else if (evt.keyCode == 37){ //a
-                     keys["l_arrow"] = true;
-                  }
-                  else if (evt.keyCode == 38){
-                     keys["u_arrow"] = true;
-                  } //s
-                  else if (evt.keyCode == 39){
-                     keys["r_arrow"] = true;
-                  }// d
-                  else if (evt.keyCode == 40){
-                     keys["d_arrow"] = true;
-                  } //w
-               }, true);
-
-               window.addEventListener("keyup", function(evt){
-                  if (evt.keyCode == 65){ //a
-                     keys["a"] = false;
-                  }
-                  else if (evt.keyCode == 83){
-                     keys["s"] = false;
-                  } //s
-                  else if (evt.keyCode == 68){
-                     keys["d"] = false;
-                  }// d
-                  else if (evt.keyCode == 87){
-                     keys["w"] = false;
-                  } //w
-                  else if (evt.keyCode == 37){ //a
-                     keys["l_arrow"] = false;
-                  }
-                  else if (evt.keyCode == 38){
-                     keys["u_arrow"] = false;
-                  } //s
-                  else if (evt.keyCode == 39){
-                     keys["r_arrow"] = false;
-                  }// d
-                  else if (evt.keyCode == 40){
-                     keys["d_arrow"] = false;
-                  } //w
-               }, true);
-         }
-         addEventListeners();
          function gameLoop(){
-            context.clearRect(0, 0, canvas.width, canvas.height); //clear for drawing
-            update_boid_positions(boids, agents);
+            //context.clearRect(0, 0, canvas.width, canvas.height); //clear for drawing
+            update_boid_positions(boids);
             draw_boids(boids);
-            draw_agents(agents);
-            detect_eating(boids, agents);
-            detect_death(boids, 50);
             window.requestAnimationFrame(gameLoop);
          }
          window.requestAnimationFrame(gameLoop);
