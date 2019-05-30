@@ -1,4 +1,4 @@
-
+//lightweight vector class
 function Vector3(x, y, z){
    this.x = x;
    this.y = y;
@@ -95,7 +95,8 @@ Boid.prototype.update_pos = function(boids){
    var v1 = this.seek_centroid(boids);
    var v2 = this.avoid_nearest(boids);
    var v3 = this.match_velocity(boids);
-   this.velocity = add_vecs(this.velocity, add_vecs(add_vecs(v1, v3), v2));
+   var v4 = this.avoid_mouse();
+   this.velocity = add_vecs(this.velocity, add_vecs(add_vecs(add_vecs(v1, v3), v2), v4));
    this.check_outside();
    this.check_velocity();
    this.pos = add_vecs(this.pos, this.velocity);
@@ -111,6 +112,19 @@ Boid.prototype.seek_centroid = function(boids){ //return new velocity
    centroid = divide_vec_scalar(centroid, boids.length-1);
    centroid = divide_vec_scalar(sub_vecs(centroid, this.pos), move_factor);
    return centroid;
+}
+Boid.prototype.avoid_mouse = function(boids){
+   //Code for mating also lives here
+   //TODO: add optimization that only makes boid move away from the closest boid
+   var min_dist = 100;
+   var repulsion = new Vector3(0, 0, 0);
+   var mouse_v = new Vector3(mousex, mousey, 0);
+   if (distance_vecs(this.pos, mouse_v) < min_dist){
+      var diff = sub_vecs(this.pos, mouse_v); //move away the exact distance
+      //random chance of mating
+      repulsion = add_vecs(diff, repulsion);
+   }
+   return divide_vec_scalar(repulsion, 10); //why this magic number?
 }
 Boid.prototype.avoid_nearest = function(boids){
    //Code for mating also lives here
@@ -149,7 +163,8 @@ Boid.prototype.drawNearest = function(){
    for (var i = 0; i < boids.length; i++){
       if (boids[i] == this) continue; //if itself, ignore
       else if (distance_vecs(this.pos, boids[i].pos) < min_dist){
-         this.context.globalAlpha = .1;
+         //this.context.strokeStyle = 'hsl(' + 360 * Math.random() + ', 50%, 50%)';
+         this.context.globalAlpha = .05;
          this.context.beginPath();
          this.context.strokeWidth = 4;
          this.context.moveTo(x - xOffset, y - yOffset);
@@ -158,6 +173,7 @@ Boid.prototype.drawNearest = function(){
          this.context.closePath();
       }
    }
+   //reducing alpha slowly https://stackoverflow.com/questions/16776665/canvas-clearrect-with-alpha
 }
 
 Boid.prototype.draw = function(){
@@ -168,7 +184,7 @@ Boid.prototype.draw = function(){
    var x = this.pos.x;
    var y = this.pos.y;
    var dir = divide_vec_scalar(this.velocity, magnitude(this.velocity)); //normalized direction
-   this.context.fillStyle = "black";
+   //this.context.fillStyle = 'hsl(' + 360 * Math.random() + ', 50%, 50%)';
    this.context.globalAlpha = 1;
    this.context.arc(x - xOffset, y -yOffset, this.curr_size.x, 0,2*Math.PI);
    this.context.fill();

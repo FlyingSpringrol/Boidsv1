@@ -10,6 +10,9 @@
    </style>
    <body>
       <script>
+         //global var
+         mousex = 0;
+         mousey = 0;
          //canvas code
          var canvas = document.createElement('canvas');
          canvas.id = 'canvas1';
@@ -41,6 +44,19 @@
          boids.push(boid7);
          boids.push(boid8);
          boids.push(boid9);
+
+
+         document.addEventListener('mousemove', function(evt){
+            var point = calculateOffset(evt.clientX, evt.clientY);
+            mousex = point.x;
+            mousey = point.y;
+         });
+
+         function calculateOffset(x,y){
+            var rect = canvas.getBoundingClientRect();
+            var point = {x: x-rect.left, y: y-rect.top}
+            return point;
+         }
 
          function gameLoop(){
             //context.clearRect(0, 0, canvas.width, canvas.height); //clear for drawing
